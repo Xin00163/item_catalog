@@ -1,0 +1,29 @@
+<html>
+
+<body>
+
+<h1>{{ingredients.name}}</h1>
+
+
+{% for i in items %}
+
+<div>
+
+<p>{{i.name}}</p>
+
+<p>{{i.method}}</p>
+
+<p> {{i.tips}} </p>
+
+<a href='{{url_for('editRecipeItem', ingredients_id = ingredients.id, recipe_id = i.id) }}'>Edit</a>
+
+</br>
+<a href = '{{url_for('deleteRecipeItem', ingredients_id = ingredients.id, recipe_id = i.id ) }}'>Delete</a>
+
+</div>
+
+
+{% endfor %}
+</body>
+
+</html>
