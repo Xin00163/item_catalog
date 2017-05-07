@@ -1,0 +1,31 @@
+<html>
+<head>
+</head>
+<body>
+
+<h1>New Recipe Item</h1>
+
+<div>
+<form action="{{ url_for('newRecipeItem', ingredient_id=ingredient_id)}}" method = 'post'>
+
+<p>
+	<p>Name:</p>
+		<p><input type ='text' size='30' name='name' required></p>
+            <p1>Method:</p1>
+                        <p2><textarea name = 'method' rows='5' cols='40' required></textarea></p2>
+            <p1>Tips:</p1>
+                        <p2><input type = 'text' size = '8' name='tips' required></p2>
+    </p>
+
+
+<input type='submit' value='Create'>
+
+</form>
+</div>
+
+</body>
+
+
+
+
+</html>

@@ -1,0 +1,61 @@
+<html>
+<head>
+</head>
+
+
+	<body>
+	<div>
+
+
+<div class = 'flash'>
+		      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+</div>
+	<h1>
+	{{ingredient.name}}
+	</h1>
+
+		{% for i in items %}
+    <div>
+		<span class = 'name'><p>{{i.name}}</p></span>
+	  </div>
+
+		<div class = 'method'>
+			<p>{{i.method}}</p>
+		</div>
+
+		<div class = 'tips'>
+			<p>{{i.tips}}</p>
+		</div>
+
+
+
+
+	<div>
+	</div>
+
+
+
+
+		{% endfor %}
+
+
+
+
+
+</div>
+	</body>
+
+
+
+
+</html>

@@ -1,41 +1,67 @@
-from flask import Flask, render_template, request, redirect, url_for
-from sqlalchemy import create_engine
+from flask import Flask, render_template, request, redirect, url_for, flash
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Ingredients, RecipeItem
+from database_setup import Base, Ingredient, RecipeItem
 
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///ingredientsrecipe.db')
+engine = create_engine('sqlite:///ingredientrecipe.db')
+inspector = inspect(engine)
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 @app.route('/')
-@app.route('/ingredients/<int:ingredients_id>/')
-def ingredientsRecipe(ingredients_id):
-    ingredients = session.query(Ingredients).filter_by(id=ingredients_id).one()
-    items = session.query(RecipeItem).filter_by(ingredients_id=ingredients.id)
-    return render_template('recipe.html', ingredients=ingredients, items=items)
+@app.route('/ingredients/<int:ingredient_id>/recipe')
+def ingredientRecipe(ingredient_id):
+    ingredient = session.query(Ingredient).filter_by(id=ingredient_id).first()
+    items = session.query(RecipeItem).filter_by(ingredient_id=ingredient_id)
+    return render_template('recipe.html', ingredient=ingredient, items=items,
+    ingredient_id=ingredient_id)
 
-@app.route('/ingredients/<int:ingredients_id>/new/', methods=['GET', 'POST'])
-def newRecipeItem(ingredients_id):
+@app.route('/ingredients/<int:ingredient_id>/new', methods=['GET', 'POST'])
+def newRecipeItem(ingredient_id):
+
     if request.method == 'POST':
-        newItem = RecipeItem(name = request.form['name'],ingredients_id = ingredients_id)
+        newItem = RecipeItem(name = request.form['name'], method=request.form[
+                           'method'], tips=request.form['tips'],
+                           ingredient_id=ingredient_id)
         session.add(newItem)
         session.commit()
-        return redirect(url_for('ingredientsRecipe', ingredients_id = ingredients_id))
+        flash("new recipe item created!")
+        return redirect(url_for('ingredientRecipe', ingredient_id=ingredient_id))
     else:
-        return render_template('newrecipeitem.html', ingredients_id = ingredients_id)
+        return render_template('newrecipeitem.html', ingredient_id=ingredient_id)
 
-@app.route('/ingredients/<int:ingredients_id>/<int:recipe_id>/edit/')
-def editRecipeItem(ingredients_id, recipe_id):
-    return "page to edit a recipe item"
+@app.route('/ingredients/<int:ingredient_id>/<int:recipe_id>/edit',
+            methods=['GET', 'POST'])
+def editRecipeItem(ingredient_id, recipe_id):
+    editedItem = session.query(RecipeItem).filter_by(id=recipe_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            edtiedItem.name = request.form['name']
+        session.add(editedItem)
+        flash("Menu Item has been edited")
+        session.commit()
+        return redirect(url_for('ingredientRecipe', ingredient_id=ingredient_id))
+    else:
+        return render_template(
+            'editrecipeitem.html', ingredient_id=ingredient_id, recipe_id=recipe_id,
+            item=editedItem)
 
-@app.route('/ingredients/<int:ingredients_id>/<int:recipe_id>/delete/')
-def deleteRecipeItem(ingredients_id, recipe_id):
-    return "page to delete a recipe"
+@app.route('/ingredients/<int:ingredient_id>/<int:recipe_id>/delete', methods=['GET', 'POST'])
+def deleteRecipeItem(ingredient_id, recipe_id):
+    itemToDelete = session.query(RecipeItem).filter_by(id=recipe_id).one()
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        flash("Menu Item has been deleted")
+        return redirect(url_for('ingredientRecipe', ingredient_id=ingredient_id))
+    else:
+        return render_template('deleteconfirmation.html', item=itemToDelete)
 
 if __name__ == '__main__':
+    app.secret_key = 'Clarke'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

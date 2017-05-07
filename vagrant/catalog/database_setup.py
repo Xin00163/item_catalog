@@ -8,8 +8,8 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
-class Ingredients(Base):
-    __tablename__ = 'ingredients'
+class Ingredient(Base):
+    __tablename__ = 'ingredient'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
@@ -18,8 +18,8 @@ class Ingredients(Base):
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
-            'name': self.name,
             'id': self.id,
+            'name': self.name
         }
 
 
@@ -30,21 +30,21 @@ class RecipeItem(Base):
     id = Column(Integer, primary_key=True)
     method = Column(String(250))
     tips = Column(String(8))
-    ingredients_id = Column(Integer, ForeignKey('ingredients.id'))
-    ingredients = relationship(Ingredients)
+    ingredient_id = Column(Integer, ForeignKey('ingredient.id'))
+    ingredient = relationship(Ingredient)
 
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
+            'id': self.id,
             'name': self.name,
             'method': self.method,
-            'id': self.id,
-            'tips': self.tips,
+            'tips': self.tips
         }
 
 
-engine = create_engine('sqlite:///ingredientsrecipe.db')
+engine = create_engine('sqlite:///ingredientrecipe.db')
 
 
 Base.metadata.create_all(engine)
