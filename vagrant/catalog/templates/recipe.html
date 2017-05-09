@@ -23,7 +23,9 @@
 	<h1>
 	{{ingredient.name}}
 	</h1>
-
+		{% if ingredient %}
+			TEST
+		{% endif %}
 		{% for i in items %}
     <div>
 		<span class = 'name'><p>{{i.name}}</p></span>
@@ -33,8 +35,8 @@
 			<p>{{i.method}}</p>
 		</div>
 
-		<div class = 'tips'>
-			<p>{{i.tips}}</p>
+		<div class = 'time_needed'>
+			<p>{{i.time_needed}}</p>
 		</div>
 
 

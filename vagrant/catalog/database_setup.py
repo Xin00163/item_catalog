@@ -29,7 +29,7 @@ class RecipeItem(Base):
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     method = Column(String(250))
-    tips = Column(String(8))
+    time_needed = Column(String(8))
     ingredient_id = Column(Integer, ForeignKey('ingredient.id'))
     ingredient = relationship(Ingredient)
 
@@ -40,7 +40,7 @@ class RecipeItem(Base):
             'id': self.id,
             'name': self.name,
             'method': self.method,
-            'tips': self.tips
+            'time_needed': self.time_needed
         }
 
 

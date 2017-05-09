@@ -13,9 +13,21 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 @app.route('/')
+@app.route('/ingredient/new', methods=['GET', 'POST'])
+def newIngredientItem():
+    if request.method == 'POST':
+        newItem = IngredientItem(name = request.form['name'])
+        session.add(newItem)
+        session.commit()
+        flash("new ingredient item created!")
+        return redirect(url_for('ingredient'))
+    else:
+        return render_template('newIngredient.html')
+
 @app.route('/ingredients/<int:ingredient_id>/recipe')
 def ingredientRecipe(ingredient_id):
-    ingredient = session.query(Ingredient).filter_by(id=ingredient_id).first()
+    ingredient = session.query(Ingredient).filter_by(id=ingredient_id).one()
+    print ingredient
     items = session.query(RecipeItem).filter_by(ingredient_id=ingredient_id)
     return render_template('recipe.html', ingredient=ingredient, items=items,
     ingredient_id=ingredient_id)
@@ -25,7 +37,7 @@ def newRecipeItem(ingredient_id):
 
     if request.method == 'POST':
         newItem = RecipeItem(name = request.form['name'], method=request.form[
-                           'method'], tips=request.form['tips'],
+                           'method'], time_needed=request.form['time_needed'],
                            ingredient_id=ingredient_id)
         session.add(newItem)
         session.commit()
