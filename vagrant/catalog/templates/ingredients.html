@@ -1,0 +1,32 @@
+<html>
+
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+	</head>
+
+
+<body>
+<div class = 'pane'>
+<h1>ingredients</h1>
+
+<a href="{{url_for('newIngredient')}}" > <h3> Create a New Ingredient </h3> </a>
+
+{% for ingredient in ingredients %}
+
+
+
+<a href = "{{url_for('showRecipe', ingredient_id = ingredient.id)}}"> <p>{{ingredient.name}}</p></a>
+
+<p><a href = "{{url_for('editIngredient',ingredient_id = ingredient.id)}}">Edit Ingredient</a></p>
+
+<p> <a href = "{{url_for('deleteIngredient',ingredient_id = ingredient.id)}}">Delete Ingredient</a></p>
+
+
+
+
+{% endfor %}
+
+</div>
+</body>
+
+</html>

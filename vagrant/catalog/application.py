@@ -13,18 +13,49 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 @app.route('/')
+
+# Show all ingredients
+@app.route('/')
+@app.route('/ingredient/')
+def showIngredients():
+    ingredients = session.query(Ingredient).all()
+    return render_template('ingredients.html', ingredients=ingredients)
+
 @app.route('/ingredient/new', methods=['GET', 'POST'])
-def newIngredientItem():
+def newIngredient():
     if request.method == 'POST':
-        newItem = IngredientItem(name = request.form['name'])
-        session.add(newItem)
+        newIngredient = IngredientItem(name = request.form['name'])
+        session.add(newIngredient)
         session.commit()
         flash("new ingredient item created!")
-        return redirect(url_for('ingredient'))
+        return redirect(url_for('showIngredients'))
     else:
         return render_template('newIngredient.html')
 
-@app.route('/ingredients/<int:ingredient_id>/recipe')
+@app.route('/ingredient/<int:ingredient_id>/edit/', methods=['GET', 'POST'])
+def editIngredient(ingredient_id):
+    editedIngredient = session.query(Ingredient).filter_by(id=ingredient_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editedIngredient.name = request.form['name']
+            return redirect(url_for('showIngredients'))
+    else:
+        return render_template(
+        'editIngredient.html', ingredient=editedIngredient)
+
+@app.route('/ingredient/<int:ingredient_id>/delete/', methods=['GET', 'POST'])
+def deleteingredient(ingredient_id):
+    ingredientToDelete = session.query(Ingredient).filter_by(id=ingredient_id).one()
+    if request.method == 'POST':
+        session.delete(ingredientToDelete)
+        session.commit()
+        return redirect(url_for('showIngredients', ingredient_id=ingredient_id))
+    else:
+        return render_template(
+            'deleteIngredient.html', ingredient=ingredientToDelete)
+
+@app.route('/ingredients/<int:ingredient_id>/')
+@app.route('/ingredients/<int:ingredient_id>/recipe/')
 def ingredientRecipe(ingredient_id):
     ingredient = session.query(Ingredient).filter_by(id=ingredient_id).one()
     print ingredient
@@ -32,9 +63,8 @@ def ingredientRecipe(ingredient_id):
     return render_template('recipe.html', ingredient=ingredient, items=items,
     ingredient_id=ingredient_id)
 
-@app.route('/ingredients/<int:ingredient_id>/new', methods=['GET', 'POST'])
+@app.route('/ingredients/<int:ingredient_id>/new/', methods=['GET', 'POST'])
 def newRecipeItem(ingredient_id):
-
     if request.method == 'POST':
         newItem = RecipeItem(name = request.form['name'], method=request.form[
                            'method'], time_needed=request.form['time_needed'],
@@ -53,6 +83,11 @@ def editRecipeItem(ingredient_id, recipe_id):
     if request.method == 'POST':
         if request.form['name']:
             edtiedItem.name = request.form['name']
+        if request.form['method']:
+            editedItem.method = request.form['method']
+        if request.form['time_needed']:
+            editedItem.time_needed = request.form['time_needed']
+
         session.add(editedItem)
         flash("Menu Item has been edited")
         session.commit()
@@ -62,7 +97,7 @@ def editRecipeItem(ingredient_id, recipe_id):
             'editrecipeitem.html', ingredient_id=ingredient_id, recipe_id=recipe_id,
             item=editedItem)
 
-@app.route('/ingredients/<int:ingredient_id>/<int:recipe_id>/delete', methods=['GET', 'POST'])
+@app.route('/ingredients/<int:ingredient_id>/recipe/<int:recipe_id>/delete', methods=['GET', 'POST'])
 def deleteRecipeItem(ingredient_id, recipe_id):
     itemToDelete = session.query(RecipeItem).filter_by(id=recipe_id).one()
     if request.method == 'POST':
@@ -71,7 +106,7 @@ def deleteRecipeItem(ingredient_id, recipe_id):
         flash("Menu Item has been deleted")
         return redirect(url_for('ingredientRecipe', ingredient_id=ingredient_id))
     else:
-        return render_template('deleteconfirmation.html', item=itemToDelete)
+        return render_template('deleterecipe.html', item=itemToDelete)
 
 if __name__ == '__main__':
     app.secret_key = 'Clarke'
