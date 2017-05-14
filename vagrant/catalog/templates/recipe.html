@@ -1,13 +1,11 @@
 <html>
 <head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
-
-
 	<body>
-	<div>
+					<div class = 'pane'>
+					<h1>{{ingredient.name}}<h1>
 
-
-<div class = 'flash'>
 		      {% with messages = get_flashed_messages() %}
       {% if messages %}
 
@@ -19,45 +17,12 @@
         {% endif %}
     {% endwith %}
 
-</div>
-	<h1>
-	{{ingredient.name}}
-	</h1>
-		{% if ingredient %}
-			TEST
+		{% if items !=[] %}
+							<a href = "{{url_for('newRecipeItem', ingredient_id = ingredient_id)}}">Create New Item</a>
+				</br></br>
+
 		{% endif %}
-		{% for i in items %}
-    <div>
-		<span class = 'name'><p>{{i.name}}</p></span>
-	  </div>
-
-		<div class = 'method'>
-			<p>{{i.method}}</p>
-		</div>
-
-		<div class = 'time_needed'>
-			<p>{{i.time_needed}}</p>
-		</div>
-
-
-
-
-	<div>
-	</div>
-
-
-
-
-		{% endfor %}
-
-
-
-
-
-</div>
+					</div>
 	</body>
-
-
-
 
 </html>
